@@ -1,5 +1,7 @@
+buttonPanel = document.querySelector("#button-panel")
+
 class calcButton {
-    constructor(name, symbol, type) {
+    constructor(name, symbol, type,) {
         this.name = name;
         this.symbol = symbol;
         this.type = type;
@@ -8,44 +10,50 @@ class calcButton {
 
 let calcButtons = [
     // Row 1
-    calcButton("percentage", "%", "modifier"),
-    calcButton("clear-entry", "CE", "control"),
-    calcButton("clear-all", "C", "control"),
-    calcButton("backspace", "⌫", "control"),
+    new calcButton("percentage", "%", "modifier"),
+    new calcButton("clear-entry", "CE", "control"),
+    new calcButton("clear-all", "C", "control"),
+    new calcButton("backspace", "⌫", "control"),
 
     // Row 2
-    calcButton("reciprocal", "1/x", "modifier"),
-    calcButton("square", "x²", "modifier"),
-    calcButton("square-root", "√x", "modifier"),
-    calcButton("divide", "÷", "operator"),
+    new calcButton("reciprocal", "1/𝑥", "modifier"),
+    new calcButton("square", "𝑥²", "modifier"),
+    new calcButton("square-root", "√𝑥", "modifier"),
+    new calcButton("divide", "÷", "operator"),
 
     // Row 3
-    calcButton("seven", "7", "operand"),
-    calcButton("eight", "8", "operand"),
-    calcButton("nine", "9", "operand"),
-    calcButton("multiply", "×", "operator"),
+    new calcButton("seven", "7", "operand"),
+    new calcButton("eight", "8", "operand"),
+    new calcButton("nine", "9", "operand"),
+    new calcButton("multiply", "×", "operator"),
 
     // Row 4
-    calcButton("four", "4", "operand"),
-    calcButton("five", "5", "operand"),
-    calcButton("six", "6", "operand"),
-    calcButton("subtract", "-", "operator"),
+    new calcButton("four", "4", "operand"),
+    new calcButton("five", "5", "operand"),
+    new calcButton("six", "6", "operand"),
+    new calcButton("subtract", "-", "operator"),
 
     // Row 5
-    calcButton("one", "1", "operand"),
-    calcButton("two", "2", "operand"),
-    calcButton("three", "3", "operand"),
-    calcButton("add", "+", "operator"),
+    new calcButton("one", "1", "operand"),
+    new calcButton("two", "2", "operand"),
+    new calcButton("three", "3", "operand"),
+    new calcButton("add", "+", "operator"),
 
     // Row 6
-    calcButton("toggle-parity", "+/-", "operand"),
-    calcButton("zero", "0", "operand"),
-    calcButton("decimal-point", ".", "operand"),
-    calcButton("equals", "=", "operator"),
+    new calcButton("toggle-parity", "+/-", "operand"),
+    new calcButton("zero", "0", "operand"),
+    new calcButton("decimal-point", ".", "operand"),
+    new calcButton("equals", "=", "operator"),
 ]
 
 function renderCalcButtons(buttons) {
     for (button in buttons) {
-        document.createElement("button")
+        newBtn = document.createElement("button");
+        newBtn.setAttribute("id", calcButtons[button].name);
+        newBtn.setAttribute("class", calcButtons[button].type);
+        newBtn.textContent = calcButtons[button].symbol;
+        buttonPanel.appendChild(newBtn);
     }
 }
+
+renderCalcButtons(calcButtons);

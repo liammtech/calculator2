@@ -28,7 +28,7 @@ footer {
     background: linear-gradient(168deg,rgb(209, 209, 209) 0%, rgba(167, 168, 168, 1) 50%, rgba(138, 138, 138, 1) 100%);
     box-shadow: 5px 5px 5px rgb(68, 66, 66);
     border: 0.1px solid rgb(109, 109, 109);
-    border-radius: 10px;
+    border-radius: 20px;
     height: auto;
     width: 400px;
 }
@@ -43,12 +43,55 @@ footer {
     height: 160px;
 }
 
-#buttonsPanel {
+#button-panel {
     display: flex;
     flex-wrap: wrap;
+    margin: 10px;
+    gap: 2px;
 }
 
 button {
-    background: linear-gradient(171deg,rgba(120, 126, 138, 1) 50%, rgba(84, 84, 84, 1) 100%);
+    border-radius: 10px;;
+    color: white;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: bold;
+    font-size: 1.5rem;;
+    padding: 10px;
+    flex: 1 1 80px;
+    height: 80px
+}
+
+.operator,
+.modifier,
+.control,
+.operand:hover {
+    background-color: rgba(84, 84, 84, 1);
     border: 0.1px solid rgb(109, 109, 109);
+}
+
+.operator:hover,
+.modifier:hover,
+.control:hover,
+.operand {
+    background-color: rgb(102, 102, 102);
+    border: 0.1px solid rgb(109, 109, 109);
+}
+
+.operator:active,
+.modifier:active,
+.control:active,
+.operand:active {
+    background-color: rgb(49, 49, 49);
+}
+
+#equals {
+    background-color: rgb(74, 127, 187);  
+}
+
+#equals:hover {
+    background-color: rgb(34, 109, 196);  
+}
+
+#equals:active {
+    background-color: rgb(18, 69, 128);  
 }
