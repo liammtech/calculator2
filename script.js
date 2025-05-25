@@ -5,8 +5,19 @@ class calcButton {
         this.name = name;
         this.symbol = symbol;
         this.type = type;
+        this.enter = () => handleEntry(name, type);
     }
 }
+
+class calcEntry {
+    constructor(value, display) {
+        this.value = value;
+        this.display = display;
+    }
+}
+
+currentEntry = null;
+currentCalculation = null;
 
 let calcButtons = [
     // Row 1
@@ -43,7 +54,7 @@ let calcButtons = [
     new calcButton("toggle-parity", "+/-", "operand"),
     new calcButton("zero", "0", "operand"),
     new calcButton("decimal-point", ".", "operand"),
-    new calcButton("equals", "=", "operator"),
+    new calcButton("equals", "=", "operand"),
 ]
 
 function renderCalcButtons(buttons) {
@@ -55,8 +66,44 @@ function renderCalcButtons(buttons) {
         newBtn.setAttribute("class", calcButtons[button].type);
         newBtn.textContent = calcButtons[button].symbol;
 
+        // Assign event listener to button
+        newBtn.addEventListener("click", calcButtons[button].enter);
+
         buttonPanel.appendChild(newBtn);
     }
 }
+
+function handleEntry(buttonName, buttonType) {
+    switch(buttonType) {
+        case "operand":
+            handleOperand(buttonName);
+            break;
+        case "modifier":
+            handleModifier(buttonName);
+            break;
+        case "operator":
+            handleOperator(buttonName);
+            break;
+        case "control":
+            handleControl(buttonName);
+            break;
+    }
+}
+
+function handleOperand(buttonName) {
+    alert(`Operand: ${buttonName}`)
+};
+
+function handleModifier(buttonName) {
+    alert(`Modifier: ${buttonName}`)
+};
+
+function handleOperator(buttonName) {
+    alert(`Operator: ${buttonName}`)
+};
+
+function handleControl(buttonName) {
+    alert(`Control: ${buttonName}`)
+};
 
 renderCalcButtons(calcButtons);
