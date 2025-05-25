@@ -49,9 +49,12 @@ let calcButtons = [
 function renderCalcButtons(buttons) {
     for (button in buttons) {
         newBtn = document.createElement("button");
+
+        // Set attributes
         newBtn.setAttribute("id", calcButtons[button].name);
         newBtn.setAttribute("class", calcButtons[button].type);
         newBtn.textContent = calcButtons[button].symbol;
+
         buttonPanel.appendChild(newBtn);
     }
 }
