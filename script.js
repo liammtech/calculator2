@@ -2,7 +2,7 @@ const buttonPanel = document.querySelector("#button-panel");
 const calculationDisplay = document.querySelector("#calculation-display");
 const entryDisplay = document.querySelector("#entry-display");
 
-class calcButton {
+class CalcButton {
     constructor(name, symbol, type) {
         this.name = name;
         this.symbol = symbol;
@@ -11,7 +11,14 @@ class calcButton {
     }
 }
 
-class calcEntry {
+class Calculation {
+        constructor(value, display) {
+        this.value = value;
+        this.display = display;
+    }
+}
+
+class CalcEntry {
     constructor(value, display) {
         this.value = value;
         this.display = display;
@@ -23,40 +30,40 @@ entryFlag = false;
 
 let calcButtons = [
     // Row 1
-    new calcButton("percentage", "%", "modifier"),
-    new calcButton("clear-entry", "CE", "control"),
-    new calcButton("clear-all", "C", "control"),
-    new calcButton("backspace", "⌫", "control"),
+    new CalcButton("percentage", "%", "modifier"),
+    new CalcButton("clear-entry", "CE", "control"),
+    new CalcButton("clear-all", "C", "control"),
+    new CalcButton("backspace", "⌫", "control"),
 
     // Row 2
-    new calcButton("reciprocal", "1/𝑥", "modifier"),
-    new calcButton("square", "𝑥²", "modifier"),
-    new calcButton("square-root", "√𝑥", "modifier"),
-    new calcButton("divide", "÷", "operator"),
+    new CalcButton("reciprocal", "1/𝑥", "modifier"),
+    new CalcButton("square", "𝑥²", "modifier"),
+    new CalcButton("square-root", "√𝑥", "modifier"),
+    new CalcButton("divide", "÷", "operator"),
 
     // Row 3
-    new calcButton("seven", "7", "operand"),
-    new calcButton("eight", "8", "operand"),
-    new calcButton("nine", "9", "operand"),
-    new calcButton("multiply", "×", "operator"),
+    new CalcButton("seven", "7", "operand"),
+    new CalcButton("eight", "8", "operand"),
+    new CalcButton("nine", "9", "operand"),
+    new CalcButton("multiply", "×", "operator"),
 
     // Row 4
-    new calcButton("four", "4", "operand"),
-    new calcButton("five", "5", "operand"),
-    new calcButton("six", "6", "operand"),
-    new calcButton("subtract", "-", "operator"),
+    new CalcButton("four", "4", "operand"),
+    new CalcButton("five", "5", "operand"),
+    new CalcButton("six", "6", "operand"),
+    new CalcButton("subtract", "-", "operator"),
 
     // Row 5
-    new calcButton("one", "1", "operand"),
-    new calcButton("two", "2", "operand"),
-    new calcButton("three", "3", "operand"),
-    new calcButton("add", "+", "operator"),
+    new CalcButton("one", "1", "operand"),
+    new CalcButton("two", "2", "operand"),
+    new CalcButton("three", "3", "operand"),
+    new CalcButton("add", "+", "operator"),
 
     // Row 6
-    new calcButton("toggle-parity", "+/-", "operand"),
-    new calcButton("zero", "0", "operand"),
-    new calcButton("decimal-point", ".", "operand"),
-    new calcButton("equals", "=", "operand"),
+    new CalcButton("toggle-parity", "+/-", "operand"),
+    new CalcButton("zero", "0", "operand"),
+    new CalcButton("decimal-point", ".", "operand"),
+    new CalcButton("equals", "=", "operand"),
 ]
 
 function renderCalcButtons(buttons) {
@@ -75,14 +82,14 @@ function renderCalcButtons(buttons) {
     }
 }
 
-function renderDisplay() {
-    if (currentCalculation != false) {
+function renderDisplay(currentCalculation, currentEntry) {
+    if (calculationFlag != false) {
         calculationDisplay.textContent = currentCalculation;
     } else {
         calculationDisplay.textContent = "";
     }
 
-    if (currentEntry != false) {
+    if (entryFlag != false) {
         entryDisplay.textContent = currentEntry;
     } else {
         entryDisplay.textContent = 0;
@@ -90,25 +97,92 @@ function renderDisplay() {
 }
 
 function handleEntry(buttonName, buttonType) {
+    if (!calculationFlag) { // If there is no current calculation: new calculation
+        calculationFlag = true;
+        currentCalculation = new Calculation(0, 0);
+    }
+
+    if (!entryFlag) { // If this is the first operand being entered: new entry
+        entryFlag = true;
+        currentEntry = new CalcEntry(0, 0);
+    }
+
+    let newValue;
+
     switch(buttonType) {
         case "operand":
-            handleOperand(buttonName);
+            handleOperand(buttonName, currentEntry);
             break;
         case "modifier":
-            handleModifier(buttonName);
+            handleModifier(buttonName, currentEntry);
             break;
         case "operator":
-            handleOperator(buttonName);
+            handleOperator(buttonName, currentEntry);
             break;
         case "control":
-            handleControl(buttonName);
+            handleControl(buttonName, currentEntry);
             break;
     }
+
+    renderDisplay((currentCalculation.value === 0 ? "" : currentCalculation.value), currentEntry.value)
 }
 
-function handleOperand(buttonName) {
-    alert(`Operand: ${buttonName}`)
-    if !
+function handleOperand(buttonName, currentEntry) {
+    if (buttonName === "zero" && currentEntry.value === 0 ) {
+        return;
+    }
+
+    if (buttonName != "decimal-point" && buttonName != "zero" && currentEntry.value === 0 ) {
+        currentEntry.value = "";
+    }
+
+    switch(buttonName) {
+        case "toggle-parity":
+            if (currentEntry.value === "") {
+                currentEntry.value = 0;
+                break;
+            } else if(currentEntry.value.charAt(0) === "-") {
+                currentEntry.value = currentEntry.value.slice(1);
+            } else {
+                currentEntry.value = "-" + currentEntry.value;
+            }
+            break;
+        case "decimal-point":
+            if (currentEntry.value.indexOf(".") != -1) {
+                break;
+            }
+            currentEntry.value += ".";
+            break;
+        case "one":
+            currentEntry.value += "1";
+            break;
+        case "two":
+            currentEntry.value += "2";
+            break;
+        case "three":
+            currentEntry.value += "3";
+            break;
+        case "four":
+            currentEntry.value += "4";
+            break;
+        case "five":
+            currentEntry.value += "5";
+            break;
+        case "six":
+            currentEntry.value += "6";
+            break;
+        case "seven":
+            currentEntry.value += "7";
+            break;
+        case "eight":
+            currentEntry.value += "8";
+            break;
+        case "nine":
+            currentEntry.value += "9";
+            break;
+    }
+
+
 };
 
 function handleModifier(buttonName) {
@@ -133,9 +207,9 @@ renderDisplay();
 //     .filter(btn => btn.type == "operand")
 //     .map(item => item.name)
 
-// modifiers = calcButtons
-//     .filter(btn => btn.type == "modifier")
-//     .map(item => item.name)
+modifiers = calcButtons
+    .filter(btn => btn.type == "modifier")
+    .map(item => item.name)
 
 // operators = calcButtons
 //     .filter(btn => btn.type == "operator")
@@ -146,6 +220,6 @@ renderDisplay();
 //     .map(item => item.name)
 
 // console.log(operands)
-// console.log(modifiers)
+console.log(modifiers)
 // console.log(operators)
 // console.log(controls)
