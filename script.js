@@ -15,18 +15,33 @@ class Calculation {
         constructor(value, display) {
         this.value = value;
         this.display = display;
+        this.operands = [];
+        this.operators = [];
     }
 }
 
 class CalcEntry {
-    constructor(value, display) {
-        this.value = value;
+    constructor(strValue, display) {
+        this.strValue = strValue;
         this.display = display;
+        this.numValue = Number(strValue);
+    }
+
+    appendStrValue(newChar) {
+        this.strValue += newChar;
+        this.numValue = Number(this.strValue);
+    }
+
+    updateNumValue(newValue) {
+        this.numValue = newValue;
+        this.strValue = this.numValue.toString();
     }
 }
 
 calculationFlag = false;
 entryFlag = false;
+modifierFlag = false;
+operatorFlag = false;
 
 let calcButtons = [
     // Row 1
@@ -60,7 +75,7 @@ let calcButtons = [
     new CalcButton("add", "+", "operator"),
 
     // Row 6
-    new CalcButton("toggle-parity", "+/-", "operand"),
+    new CalcButton("toggle-parity", "+/-", "modifier"),
     new CalcButton("zero", "0", "operand"),
     new CalcButton("decimal-point", ".", "operand"),
     new CalcButton("equals", "=", "operand"),
@@ -82,15 +97,15 @@ function renderCalcButtons(buttons) {
     }
 }
 
-function renderDisplay(currentCalculation, currentEntry) {
+function renderDisplay(currentCalculationStr, currentEntryStr) {
     if (calculationFlag != false) {
-        calculationDisplay.textContent = currentCalculation;
+        calculationDisplay.textContent = currentCalculationStr;
     } else {
         calculationDisplay.textContent = "";
     }
 
     if (entryFlag != false) {
-        entryDisplay.textContent = currentEntry;
+        entryDisplay.textContent = currentEntryStr;
     } else {
         entryDisplay.textContent = 0;
     }
@@ -124,69 +139,123 @@ function handleEntry(buttonName, buttonType) {
             break;
     }
 
-    renderDisplay((currentCalculation.value === 0 ? "" : currentCalculation.value), currentEntry.value)
+    if (entryFlag) {
+        renderDisplay((currentCalculation.value === 0 ? "" : currentCalculation.value), currentEntry.numValue)
+    }
 }
 
 function handleOperand(buttonName, currentEntry) {
-    if (buttonName === "zero" && currentEntry.value === 0 ) {
+    if (buttonName === "zero" && currentEntry.strValue === 0 ) {
         return;
     }
 
-    if (buttonName != "decimal-point" && buttonName != "zero" && currentEntry.value === 0 ) {
-        currentEntry.value = "";
+    if (buttonName != "decimal-point" && buttonName != "zero" && currentEntry.numValue === 0 ) {
+        currentEntry.strValue = "";
     }
 
     switch(buttonName) {
-        case "toggle-parity":
-            if (currentEntry.value === "") {
-                currentEntry.value = 0;
-                break;
-            } else if(currentEntry.value.charAt(0) === "-") {
-                currentEntry.value = currentEntry.value.slice(1);
-            } else {
-                currentEntry.value = "-" + currentEntry.value;
-            }
-            break;
         case "decimal-point":
-            if (currentEntry.value.indexOf(".") != -1) {
+            if (currentEntry.strValue.indexOf(".") != -1) {
                 break;
             }
-            currentEntry.value += ".";
+            currentEntry.valueBuffer += ".";
             break;
         case "one":
-            currentEntry.value += "1";
+            currentEntry.appendStrValue("1");
             break;
         case "two":
-            currentEntry.value += "2";
+            currentEntry.appendStrValue("2");
             break;
         case "three":
-            currentEntry.value += "3";
+            currentEntry.appendStrValue("3");
             break;
         case "four":
-            currentEntry.value += "4";
+            currentEntry.appendStrValue("4");
             break;
         case "five":
-            currentEntry.value += "5";
+            currentEntry.appendStrValue("5");
             break;
         case "six":
-            currentEntry.value += "6";
+            currentEntry.appendStrValue("6");
             break;
         case "seven":
-            currentEntry.value += "7";
+            currentEntry.appendStrValue("7");
             break;
         case "eight":
-            currentEntry.value += "8";
+            currentEntry.appendStrValue("8");
             break;
         case "nine":
-            currentEntry.value += "9";
+            currentEntry.appendStrValue("9");
             break;
     }
-
-
 };
 
-function handleModifier(buttonName) {
-    alert(`Modifier: ${buttonName}`)
+function handleModifier(buttonName, currentEntry) {
+    console.log(currentEntry.numValue);
+    switch (buttonName) {
+        case "toggle-parity":
+            if (currentEntry.strValue === "") {
+                currentEntry.strValue = 0;
+                break;
+            } else if(currentEntry.strValue.charAt(0) === "-") {
+                currentEntry.strValue = currentEntry.strValue.slice(1);
+            } else {
+                currentEntry.strValue = "-" + currentEntry.strValue;
+                currentEntry.numValue = -Math.abs(currentEntry.numValue);
+            }
+            break;
+        case "percentage":
+            if (currentCalculation.operands.length === 0 ||
+                currentCalculation.operands[0] === 0
+            ) {
+                currentEntry.numValue = 0;
+                break;
+            } else if (
+                currentCalculation.operands.length === 1
+            ) {
+                currentEntry.numValue = currentCalculation.operands[0] / 100;
+                currentCalculation.operands.push(currentEntry.numValue);
+                break;
+            } else if (
+                currentCalculation.operands.length === 2
+            ) {
+                currentEntry.numValue = currentCalculation.operands[1] / 100;
+                currentCalculation.operands.push(currentEntry.numValue);
+                break;
+            }
+        case "reciprocal":
+            if (currentEntry.numValue === 0) {
+                break;
+            } else {
+                currentEntry.updateNumValue(1 / currentEntry.numValue);
+                entryDisplay.classList.add("result-display")
+                break;
+            }
+        case "square":
+            if (currentEntry.numValue === 0) {
+                break;
+            } else {
+                console.log(currentEntry.numValue);
+                currentEntry.updateNumValue(currentEntry.numValue * currentEntry.numValue);
+                entryDisplay.classList.add("result-display")
+                break;
+            }
+        case "square-root":
+            if (currentEntry.numValue === 0) {
+                break;
+            } else if (currentEntry.numValue < 0) {
+                console.log(entryDisplay);
+                entryDisplay.textContent = "INVALID";
+                entryFlag = false;
+                calculationFlag = false;
+                break;
+            } else {
+                console.log(currentEntry.numValue);
+                currentEntry.updateNumValue(Math.sqrt(currentEntry.numValue));
+                entryDisplay.classList.add("result-display")
+                break;
+            }
+    }
 };
 
 function handleOperator(buttonName) {
@@ -194,32 +263,47 @@ function handleOperator(buttonName) {
 };
 
 function handleControl(buttonName) {
-    alert(`Control: ${buttonName}`)
+    switch (buttonName) {
+        case "clear-all":
+            initCalculator();
+            break;
+        case "clear-entry":
+            currentEntry.numValue = 0;
+            break;
+    }
 };
 
-renderCalcButtons(calcButtons);
-renderDisplay();
+
+function initCalculator() {
+    calculationFlag = false;
+    entryFlag = false;
+    buttonPanel.innerHTML = "";
+    renderCalcButtons(calcButtons);
+    renderDisplay();
+};
 
 
-//Here if I need it
+    //Here if I need it
 
-// operands = calcButtons
-//     .filter(btn => btn.type == "operand")
-//     .map(item => item.name)
+    // operands = calcButtons
+    //     .filter(btn => btn.type == "operand")
+    //     .map(item => item.name)
 
-modifiers = calcButtons
-    .filter(btn => btn.type == "modifier")
-    .map(item => item.name)
+    modifiers = calcButtons
+        .filter(btn => btn.type == "modifier")
+        .map(item => item.name)
 
-// operators = calcButtons
-//     .filter(btn => btn.type == "operator")
-//     .map(item => item.name)
+    // operators = calcButtons
+    //     .filter(btn => btn.type == "operator")
+    //     .map(item => item.name)
 
-// controls = calcButtons
-//     .filter(btn => btn.type == "control")
-//     .map(item => item.name)
+    // controls = calcButtons
+    //     .filter(btn => btn.type == "control")
+    //     .map(item => item.name)
 
-// console.log(operands)
-console.log(modifiers)
-// console.log(operators)
-// console.log(controls)
+    // console.log(operands)
+    console.log(modifiers)
+    // console.log(operators)
+    // console.log(controls)
+
+initCalculator();

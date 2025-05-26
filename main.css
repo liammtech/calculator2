@@ -70,6 +70,10 @@ footer {
     overflow: hidden;
 }
 
+#entry-display.result-display {
+    justify-content: flex-start !important;    
+}
+
 #button-panel {
     display: flex;
     flex-wrap: wrap;
