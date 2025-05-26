@@ -14,7 +14,7 @@ class CalcButton {
 class Calculation {
         constructor(value, display) {
         this.value = value;
-        this.display = display;
+        this.display = [];
         this.operands = [];
         this.operators = [];
     }
@@ -35,6 +35,10 @@ class CalcEntry {
     updateNumValue(newValue) {
         this.numValue = newValue;
         this.strValue = this.numValue.toString();
+    }
+
+    updateDisplayValue(newValue) {
+        this.displayValue = newValue;
     }
 }
 
@@ -112,7 +116,7 @@ function renderDisplay(currentCalculationStr, currentEntryStr) {
 }
 
 function handleEntry(buttonName, buttonType) {
-    if (!calculationFlag) { // If there is no current calculation: new calculation
+    if (!calculationFlag) { // If there is no current calculation chain: new calculation
         calculationFlag = true;
         currentCalculation = new Calculation(0, 0);
     }
@@ -122,26 +126,41 @@ function handleEntry(buttonName, buttonType) {
         currentEntry = new CalcEntry(0, 0);
     }
 
+    if (buttonType === "operand" && modifierFlag) {
+        entryFlag = true;
+        modifierFlag = false;
+        currentEntry = new CalcEntry(0, 0);
+    }
+
     let newValue;
 
     switch(buttonType) {
         case "operand":
-            handleOperand(buttonName, currentEntry);
+            handleOperand(buttonName, currentEntry); // Doesn't interact directly with the calculation chain, so doesn't need the currentCalculation object
             break;
         case "modifier":
-            handleModifier(buttonName, currentEntry);
+            handleModifier(buttonName, currentEntry, currentCalculation);
             break;
         case "operator":
-            handleOperator(buttonName, currentEntry);
+            handleOperator(buttonName, currentEntry, currentCalculation);
             break;
         case "control":
-            handleControl(buttonName, currentEntry);
+            handleControl(buttonName, currentEntry, currentCalculation);
             break;
     }
 
     if (entryFlag) {
-        renderDisplay((currentCalculation.value === 0 ? "" : currentCalculation.value), currentEntry.numValue)
+        renderDisplay((currentEntry.displayValue === 0 ? "" : currentEntry.displayValue), currentEntry.numValue)
     }
+}
+
+function updateCalculationOperands(operand) {
+    currentCalculation.operands.push(operand);
+    console.log(currentCalculation.operands);
+}
+
+function updateCalculationOperators(operator) {
+
 }
 
 function handleOperand(buttonName, currentEntry) {
@@ -190,8 +209,8 @@ function handleOperand(buttonName, currentEntry) {
     }
 };
 
-function handleModifier(buttonName, currentEntry) {
-    console.log(currentEntry.numValue);
+function handleModifier(buttonName, currentEntry, currentCalculation) {
+    let modifierStr = "";
     switch (buttonName) {
         case "toggle-parity":
             if (currentEntry.strValue === "") {
@@ -202,7 +221,13 @@ function handleModifier(buttonName, currentEntry) {
             } else {
                 currentEntry.strValue = "-" + currentEntry.strValue;
                 currentEntry.numValue = -Math.abs(currentEntry.numValue);
+            if (!currentEntry.displayValue) {
+                currentEntry.updateDisplayValue(`${currentEntry.strValue}`);
+            } else {
+                currentEntry.updateDisplayValue(`-${currentEntry.displayValue})`);
             }
+            }
+
             break;
         case "percentage":
             if (currentCalculation.operands.length === 0 ||
@@ -220,6 +245,7 @@ function handleModifier(buttonName, currentEntry) {
                 currentCalculation.operands.length === 2
             ) {
                 currentEntry.numValue = currentCalculation.operands[1] / 100;
+                currentEntry.updateDisplayValue(currentEntry.strValue);
                 currentCalculation.operands.push(currentEntry.numValue);
                 break;
             }
@@ -227,8 +253,13 @@ function handleModifier(buttonName, currentEntry) {
             if (currentEntry.numValue === 0) {
                 break;
             } else {
+                if (!currentEntry.displayValue) {
+                    currentEntry.updateDisplayValue(`1/(${currentEntry.strValue})`);
+                } else {
+                    currentEntry.updateDisplayValue(`1/(${currentEntry.displayValue})`);
+                }
                 currentEntry.updateNumValue(1 / currentEntry.numValue);
-                entryDisplay.classList.add("result-display")
+                entryDisplay.classList.add("result-display");
                 break;
             }
         case "square":
@@ -236,7 +267,13 @@ function handleModifier(buttonName, currentEntry) {
                 break;
             } else {
                 console.log(currentEntry.numValue);
+                if (!currentEntry.displayValue) {
+                    currentEntry.updateDisplayValue(`sqr(${currentEntry.strValue})`);
+                } else {
+                    currentEntry.updateDisplayValue(`sqr(${currentEntry.displayValue})`);
+                }
                 currentEntry.updateNumValue(currentEntry.numValue * currentEntry.numValue);
+                
                 entryDisplay.classList.add("result-display")
                 break;
             }
@@ -251,14 +288,28 @@ function handleModifier(buttonName, currentEntry) {
                 break;
             } else {
                 console.log(currentEntry.numValue);
+                if (!currentEntry.displayValue) {
+                    currentEntry.updateDisplayValue(`sqrt(${currentEntry.strValue})`);
+                } else {
+                    currentEntry.updateDisplayValue(`sqrt(${currentEntry.displayValue})`);
+                }
                 currentEntry.updateNumValue(Math.sqrt(currentEntry.numValue));
                 entryDisplay.classList.add("result-display")
                 break;
             }
     }
+    renderDisplay((currentCalculation.value === 0 ? "" : currentCalculation.value), currentEntry.numValue)
+    if (modifierFlag) {
+        updateCalculationOperands(currentEntry);
+        calculationFlag = true;
+    }
+    else {
+        calculationFlag = true;
+        modifierFlag = true;
+    }
 };
 
-function handleOperator(buttonName) {
+function handleOperator(buttonName, currentEntry, currentCalculation) {
     alert(`Operator: ${buttonName}`)
 };
 
@@ -273,15 +324,15 @@ function handleControl(buttonName) {
     }
 };
 
-
 function initCalculator() {
     calculationFlag = false;
     entryFlag = false;
+    modifierFlag = false;
+    operatorFlag = false;
     buttonPanel.innerHTML = "";
     renderCalcButtons(calcButtons);
     renderDisplay();
 };
-
 
     //Here if I need it
 
