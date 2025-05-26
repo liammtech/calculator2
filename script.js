@@ -1,4 +1,6 @@
-buttonPanel = document.querySelector("#button-panel")
+const buttonPanel = document.querySelector("#button-panel");
+const calculationDisplay = document.querySelector("#calculation-display");
+const entryDisplay = document.querySelector("#entry-display");
 
 class calcButton {
     constructor(name, symbol, type,) {
@@ -16,8 +18,8 @@ class calcEntry {
     }
 }
 
-currentEntry = null;
 currentCalculation = null;
+currentEntry = 0;
 
 let calcButtons = [
     // Row 1
@@ -73,6 +75,20 @@ function renderCalcButtons(buttons) {
     }
 }
 
+function renderDisplay() {
+    if (currentCalculation != null) {
+        calculationDisplay.textContent = currentCalculation;
+    } else {
+        calculationDisplay.textContent = "";
+    }
+
+    if (currentEntry != null) {
+        entryDisplay.textContent = currentEntry;
+    } else {
+        entryDisplay.textContent = 0;
+    }
+}
+
 function handleEntry(buttonName, buttonType) {
     switch(buttonType) {
         case "operand":
@@ -92,6 +108,7 @@ function handleEntry(buttonName, buttonType) {
 
 function handleOperand(buttonName) {
     alert(`Operand: ${buttonName}`)
+    // if !
 };
 
 function handleModifier(buttonName) {
@@ -107,3 +124,28 @@ function handleControl(buttonName) {
 };
 
 renderCalcButtons(calcButtons);
+renderDisplay();
+
+
+//Here if I need it
+
+// operands = calcButtons
+//     .filter(btn => btn.type == "operand")
+//     .map(item => item.name)
+
+// modifiers = calcButtons
+//     .filter(btn => btn.type == "modifier")
+//     .map(item => item.name)
+
+// operators = calcButtons
+//     .filter(btn => btn.type == "operator")
+//     .map(item => item.name)
+
+// controls = calcButtons
+//     .filter(btn => btn.type == "control")
+//     .map(item => item.name)
+
+// console.log(operands)
+// console.log(modifiers)
+// console.log(operators)
+// console.log(controls)

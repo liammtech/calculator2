@@ -52,7 +52,7 @@ footer {
     font-family: "DS-DIGI";
 }
 
-#calculation {
+#calculation-display {
     max-width: 100%;
     font-size: 48px;
     display: flex;
@@ -61,7 +61,7 @@ footer {
     overflow: hidden;
 }
 
-#entry {
+#entry-display {
     max-width: 100%;
     font-size: 72px;
     display: flex;
