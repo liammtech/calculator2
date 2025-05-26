@@ -3,7 +3,7 @@ const calculationDisplay = document.querySelector("#calculation-display");
 const entryDisplay = document.querySelector("#entry-display");
 
 class calcButton {
-    constructor(name, symbol, type,) {
+    constructor(name, symbol, type) {
         this.name = name;
         this.symbol = symbol;
         this.type = type;
@@ -18,8 +18,8 @@ class calcEntry {
     }
 }
 
-currentCalculation = null;
-currentEntry = 0;
+calculationFlag = false;
+entryFlag = false;
 
 let calcButtons = [
     // Row 1
@@ -76,13 +76,13 @@ function renderCalcButtons(buttons) {
 }
 
 function renderDisplay() {
-    if (currentCalculation != null) {
+    if (currentCalculation != false) {
         calculationDisplay.textContent = currentCalculation;
     } else {
         calculationDisplay.textContent = "";
     }
 
-    if (currentEntry != null) {
+    if (currentEntry != false) {
         entryDisplay.textContent = currentEntry;
     } else {
         entryDisplay.textContent = 0;
@@ -108,7 +108,7 @@ function handleEntry(buttonName, buttonType) {
 
 function handleOperand(buttonName) {
     alert(`Operand: ${buttonName}`)
-    // if !
+    if !
 };
 
 function handleModifier(buttonName) {
