@@ -78,7 +78,7 @@ function renderDisplay(currentCalculationStr, currentEntryStr) {
 }
 
 function handleEntry(buttonName, buttonType) {
-    alert()
+    console.log(`Button name: ${buttonName}\nButton type: ${buttonType}`);
 }
 
 function initCalculator() {
