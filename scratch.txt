@@ -1,5 +1,34 @@
-0 is the starting number
+Behaviours
 
-(number) Enter a number first
+- The calculator has a class for entries, and a class for the calculation chain
+- When the calculator initialises, it initiates an entry class, with a value of zero. There is not yet a calculation chain
 
--(number)
+OPERAND MODE
+// DECIMAL POINT & ALL NUMERIC CHARACTERS
+- All numeric characters and the decimal point are considered "operands"
+- During it's initial phase, an entry is in "operand mode", where it will remain as long as only operands are pressed
+- If the first button pressed is a:
+    - Zero, then nothing happens
+    - A 1-9 digit, then this overwrites the zero. From then on, any subsequent digits (including zero) are concatenated to the end end of the entry value
+    - A decimal point, then this concatenates to the zero. A decimal point differs from the other operands in that it can only appear once within a given entry value
+- Operand mode is reset if the entry is reset (goes back to zero - C/CE)
+- Operand mode ends when either:
+    - A modifier is pressed, it enters modifier mode (the entry is pushed to the calculation, but is not yet closed, and is still editable by modifiers only - not operands)
+    - An operator is pressed, it enters operator mode (the entry is closed and pushed to the calculation, along with the new operator - the operator remains interchangeable until a new entry is opened or the calculation is closed/completed)
+
+MODIFIER MODE
+// PERCENTAGE, RECIPROCAL, SQUARE, SQUARE-ROOT & TOGGLE-PARITY
+- Modifiers "modify" the current entry
+- Once a modifier is selected during an entry, operand mode is over, and the calculator enters modifier mode*
+
+Modifier behaviours:
+    - Percentage divides the current entry value by 100 (converts it to it's percentage equivalent). This only works as intended for the second entry onward (see asterisk clause below)
+
+* The exceptions to this are:
+    - if it is the first entry, percentage just resets the value to zero. It is then back in entry mode
+    - if the current entry value is zero, percentage does nothing (or, in effect, resets the entry value to zero). It is then back in entry mode
+    - if the current entry value is zero, reciprocal produces an error - "INVALID" - and ends the calculation (cannot divide by zero). You will need to then reset to entry mode yourself, by either entering some operands, or hitting reset/backspace/equals
+        - maybe have divide-zero error as it's own state? Or an error state? Same for overflow
+
+- Modifiers can "stack" for a given entry. If you add a square root to a value, you can then do the square root of the resulting value, or switch it to negative, or to a percentage, and so on
+- Modifier mode finishes when an operator (+/-/÷/x) is pressed, at which point we enter "operator" mode
