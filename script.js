@@ -7,7 +7,7 @@ class CalcButton {
         this.name = name;
         this.symbol = symbol;
         this.type = type;
-        this.enter = () => handleEntry(name, type);
+        this.enter = () => handleEntry(name, type); // Event listener for each button gets attached here
     }
 }
 
