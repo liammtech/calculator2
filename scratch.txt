@@ -4,6 +4,11 @@ CALCULATOR BEHAVIOURS
 - When the calculator initialises, it initiates an entry class, with a value of zero. There is 
 not yet a calculation chain
 
+CONTROLS
+C - Resets calculator
+CE - Resets current entry to 0
+⌫ - While in entry mode, deletes most recently entered value
+
 OPERAND MODE
 // DECIMAL POINT & ALL NUMERIC CHARACTERS
 - All numeric characters and the decimal point are considered "operands"
@@ -57,6 +62,7 @@ Take the following example:
         negate(1/(sqr(√(3)))) - where each symbol set "wraps" around the previous, at each step. 
         - This serves to demonstrate how the calculation pane is not a value store, merely a 
         representation
+- CE will still reset the current entry to zero, negating any modifiers, if pressed during modifier mode
 
 ** The exception to this is again, percentage, which when used on a valid value (2nd or subsequent
 entry) will "flatten" the representation to the current resulting value, in the calculation pane
@@ -89,6 +95,9 @@ for a different one: they cannot "stack" like the modifiers. Only one operator b
 when the aforementioned "cloned" value from the previous entry is still visible. This is how you
 know you are still in "operator mode". Once you alter the entry, you are either back in entry mode,
 or modifier mode, depending upon what you pressed
+- Entering a subsequent operator (2nd or more in the calculation) after a new entry mode works the 
+same as pressing equals - the result is pushed to both the entry pane (as the next default operand)
+and to the calculation pane
 
 EQUALS / EVALUATION
 - Equals pushes the most recent entry to the calculation, and evaluates the result of the calculation
@@ -99,3 +108,6 @@ further inputs, but it is not factored into any following calculation - the resu
 - The entry behaves exactly the same as when you enter operator mode from here, as the
 "cloned" value (the result) is now the default value for the next entry. Again, this can be
 "picked up" by hitting an operator or modifier, or "dropped", by entering new operands
+- From here, the calculator cycles through the behaviours as previously described
+
+...and the world keeps turning, baby!
