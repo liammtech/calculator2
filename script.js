@@ -12,7 +12,19 @@ class CalcButton {
 }
 
 class Calculation {
+    #mode;
+    #value;
+    #display;
+    #buffer;
+    #mode;
+    #operator;
 
+    static allowedModes = ['new', 'entry', 'modifier', 'operator'];
+    static allowedOperators = ['add', 'subtract', 'multiply', 'divide', 'equals'];
+
+    constructor() {
+
+    }
 }
 
 class CalcEntry {
@@ -54,7 +66,7 @@ let calcButtons = [
     new CalcButton("toggle-parity", "+/-", "modifier"),
     new CalcButton("zero", "0", "operand"),
     new CalcButton("decimal-point", ".", "operand"),
-    new CalcButton("equals", "=", "evaluate"),
+    new CalcButton("equals", "=", "operator"),
 ]
 
 function renderCalcButtons(buttons) {
