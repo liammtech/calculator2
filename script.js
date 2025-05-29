@@ -12,6 +12,11 @@ class CalcButton {
 }
 
 class Calculation {
+    #active;
+    #chain;
+    #result;
+    #display;
+
 
 }
 
@@ -109,6 +114,30 @@ class CalcEntry {
     get buffer() {
         return [...this.#buffer]; // Safe clone
     }
+
+    // Mode
+    get mode() {
+        return this.#mode;
+    }
+
+    set mode(val) {
+        if (!CalcEntry.allowedModes.includes(val)) {
+            throw new Error(`Invalid mode: ${value}. Allowed values are: ${MyObject.allowedModes.join(', ')}`)
+        }
+        this.#mode = this.#value;
+    }
+
+    // Operator
+    get operator() {
+        return this.#operator;
+    }
+
+    set operator(val) {
+        if (!CalcEntry.allowedOperators.includes(val)) {
+            throw new Error(`Invalid operator: ${value}. Allowed values are: ${MyObject.allowedOperators.join(', ')}`)
+        }
+        this.#operator = this.#value;
+    }
 }
 
 let calcButtons = [
@@ -175,9 +204,9 @@ function handleEntry(buttonName, buttonType) {
 
 function initCalculator() {
     buttonPanel.innerHTML = "";
+    let currentEntry = new CalcEntry(0);
     renderCalcButtons(calcButtons);
     renderDisplay();
 };
-
 
 initCalculator();
