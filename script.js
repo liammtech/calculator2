@@ -91,13 +91,19 @@ class CalcEntry {
     }
 
     set buffer(newVal) {
+        const allowed = new Set(['0','1','2','3','4','5','6','7','8','9','-','.']);
+    
+        let chars;
+
         if (typeof newVal === 'number' || typeof newVal === 'string') {
-            this.#buffer = newVal.toString().split('');
+            chars = newVal.toString().split('');
         } else if (Array.isArray(newVal)) {
-            this.#buffer = [...newVal.map(String)];
+            chars = [...newVal.map(String)];
         } else {
             throw new Error("Buffer must be a string, number, or array");
         }
+
+        this.#buffer = chars.filter(char => allowed.has(char));
     }
 
     get buffer() {
