@@ -103,8 +103,9 @@ class CalcEntry {
         this.active = true;
         this.value = value;
         this.display = "";
-        this.buffer = buffer;
-        this.mode = undefined;
+        this.buffer = []
+        this.mode = "new";
+        this.updateEntryDisplay();
     }
 
     // Active flag
@@ -137,9 +138,13 @@ class CalcEntry {
     }
 
     set display(str) {
-        if (typeof val != "string") {
+        if (typeof str != "string") {
             throw new Error(`Error: CalcEntry.string type must be number`)
         }        
+    }
+
+    updateEntryDisplay() {
+        entryDisplay.textContent = this.#value;
     }
 
     // Buffer
