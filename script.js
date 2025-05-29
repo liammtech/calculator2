@@ -12,23 +12,29 @@ class CalcButton {
 }
 
 class Calculation {
-    #mode;
+
+}
+
+class CalcEntry {
+    #active;
     #value;
     #display;
     #buffer;
     #mode;
     #operator;
 
-    static allowedModes = ['new', 'entry', 'modifier', 'operator'];
-    static allowedOperators = ['add', 'subtract', 'multiply', 'divide', 'equals'];
+    static allowedModes = ["new", "entry", "modifier", "operator"]; // will always be in one of these four states
+    static allowedOperators = ["add", "subtract", "multiply", "divide", "equals", undefined]; // Needs to allow it not being set yet
 
-    constructor() {
-
+    constructor(value) {
+        this.active = true;
+        this.value = value;
+        this.display = "";
+        this.buffer = buffer;
+        this.mode = undefined;
     }
-}
 
-class CalcEntry {
-    
+        
 }
 
 let calcButtons = [
