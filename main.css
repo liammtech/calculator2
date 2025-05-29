@@ -82,7 +82,7 @@ footer {
 }
 
 button {
-    border-radius: 10px;;
+    border-radius: 10px;
     color: white;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-weight: bold;
@@ -116,6 +116,7 @@ button {
 }
 
 #equals {
+    border: 0.1px solid rgb(109, 109, 109);
     background-color: rgb(74, 127, 187);  
 }
 

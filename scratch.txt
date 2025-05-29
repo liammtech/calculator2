@@ -4,12 +4,13 @@ INTERFACE
 - The UI has a "screen" for displaying values. It has two rows/sections:
     - The upper, smaller row, represents the current calculation chain
     - The lower, larger row, represents the current value being entered
-- The UI has buttons for all controls, which have been defined as belonging to one of four
+- The UI has buttons for all controls, which have been defined as belonging to one of five
 groups:
     - Global controls
     - Operands
     - Modifiers
     - Operators
+    - Evaluate
 
 OVERVIEW
 - The program has a class for entries, and a class for the calculation chain
@@ -25,30 +26,30 @@ objects, at a given time
 GLOBAL CONTROLS
 C - Resets calculator
 CE - Resets current entry to 0
-⌫ - While in entry stage, deletes most recently entered character (if any have been entered, 
-else inert)
+⌫ - While in entry stage, deletes most recently entered character (only if any have been 
+entered, else inert)
 
 OPERAND STAGE
 // DECIMAL POINT & ALL NUMERIC CHARACTERS
 - All numeric characters and the decimal point are considered "operand" characters
 - During it's initial phase, an entry is in "operand stage" (or, entry stage), where it will remain 
 as long as only operands are pressed
-- If the calculator has been reset prior, the starting value is zero (as mentioned above)
+- If the calculator has just been reset, the starting value is zero (as mentioned above)
 - If we have re-entered operand stage following on from a previous calculation, the default value
 is the previous result (more on that to follow)
 - If the first button pressed is a:
-    - Zero, then resets to zero
+    - Zero, then resets the entry value to zero
     - A 1-9 digit, then this overwrites the zero/default value. From then on, any subsequent 
     digits (including zero) are concatenated to the end of the entry value
-    - A decimal point, then this resets to zero, and concatenates a decimal point to the zero
-- Decimal point differs from the other operands in that it can only appear once within a given
+    - A decimal point, then this resets to zero and concatenates a decimal point after the zero
+- The decimal point differs from the other operands, in that it can only appear once within a given
 entry value
 - Operand stage is reset if the entry is reset (C/CE)
 - Operand stage ends when either:
     - A modifier is pressed; it then enters modifier stage (the entry is pushed to the calculation, 
     but is not yet fully closed, and is still editable by modifiers only - not operands)
     - An operator is pressed; it enters operator stage, the entry is closed and pushed to the 
-    calculation, along with the new operator (the operator remains interchangeable until a new 
+    calculation, along with the new operator (the operator remains interchangeable, until a new 
     entry is opened or the calculation is closed/completed)
 
 MODIFIER STAGE
@@ -137,3 +138,35 @@ further inputs, but it is not factored into any following calculation - the resu
 - From here, the calculator cycles through the behaviours as previously described
 
 ...and the world keeps turning, baby!
+
+
+MISC NOTES===========================================================================================
+
+Entry Object Properties
+- Active/inactive
+    - private bool property: #active
+    - getter
+    - setter with error handling (must be bool)
+    - constructor uses setter
+- Value
+    - private number property: #value
+    - getter
+    - setter (validates if number)
+    - constructor uses setter
+- Representation string
+    - private string property: #value
+    - getter
+    - setter (validates if string)
+    - constructor uses setter
+- Buffer (array to store inputted digits during entry mode. Automatically updates value when changed)
+    - private array property: #buffer
+    - append() pushes new digit to end (rejects decimal if already present)
+    - convertToValue() joins the array together (first as a string, then casts to number), and updates this.value
+    - createFromValue() updates the buffer 
+    - negate() puts a minus sign at the start
+- Mode (stage)
+    - private string property: #mode
+    - getter
+    - setter with error handling (must be in valid mode array)
+    - constructor uses setter
+    - static array for valid modes

@@ -16,7 +16,7 @@ class Calculation {
 }
 
 class CalcEntry {
-
+    
 }
 
 let calcButtons = [
@@ -54,7 +54,7 @@ let calcButtons = [
     new CalcButton("toggle-parity", "+/-", "modifier"),
     new CalcButton("zero", "0", "operand"),
     new CalcButton("decimal-point", ".", "operand"),
-    new CalcButton("equals", "=", "operand"),
+    new CalcButton("equals", "=", "evaluate"),
 ]
 
 function renderCalcButtons(buttons) {
