@@ -153,7 +153,7 @@ Entry Object Properties
     - getter
     - setter (validates if number)
     - constructor uses setter
-- Representation string
+- Representation string (dictates how the operand entry is shown in the calculation display)
     - private string property: #value
     - getter
     - setter (validates if string)
@@ -169,4 +169,32 @@ Entry Object Properties
     - getter
     - setter with error handling (must be in valid mode array)
     - constructor uses setter
-    - static array for valid modes
+    - static array for valid modes ["new", "entry", "modifier", "operator"]
+- Operator
+    - private string property: #operator
+    - getter
+    - setter with error handling (must be in valid operator array)
+    - static array for valid operators
+
+Calculation Object Properties
+- Active/inactive
+    - private bool property: #active
+    - getter
+    - setter with error handling (must be bool)
+    - constructor uses setter
+- Chain
+    - private array property: #chain (array of calculation objects)
+    - getter
+    - setter with error handling (must be calculationEntry object)
+        - setter checks if last calculationEntry object's operator is "equals", if so, calls this.setResult()
+    - constructor uses setter
+- Result
+    - private number property: #result
+    - getter
+    - setter (triggered by method on this.chain)
+    - constructor uses setter
+- Display string
+    - private number property: #result
+    - getter
+    - setter (triggered by method on this.chain)
+    - constructor uses setter
