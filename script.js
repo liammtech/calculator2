@@ -2,6 +2,15 @@ const buttonPanel = document.querySelector("#button-panel");
 const calculationDisplay = document.querySelector("#calculation-display");
 const entryDisplay = document.querySelector("#entry-display");
 
+const operatorMap = {
+    add: '+',
+    subtract: '-',
+    multiply: '*',
+    divide: '/',
+    equals: '='
+};
+
+
 class CalcButton {
     constructor(name, symbol, type) {
         this.name = name;
@@ -17,6 +26,65 @@ class Calculation {
     #result;
     #display;
 
+    constructor() {
+        this.active = true;
+        this.chain = [];
+        this.result = undefined;
+        this.display = "";
+    }
+
+    // Active flag
+    get active() {
+        return this.#active;
+    }
+
+    set active(bool) {
+        if (typeof bool != "boolean") {
+            throw new Error(`Error: Calculation.active type must be boolean`)
+        }
+        this.#active = bool;
+    }
+
+    // Calculation chain
+    clearChain() {
+        this.#chain = [];
+    }
+
+    appendToChain(entryObj) {
+        if (typeof entryObj !== CalcEntry) {
+            throw new Error(`Invalid calculation chain item: type must be CalcEntry object`);
+        }
+
+        this.#chain.push(entryObj);
+
+        if (entryObj.operator() == "equals") {
+            this.calculateResult();
+        }
+    }
+
+    // Calculation result
+
+    calculateResult() {
+        let expression = '';
+
+        for (const obj of this.chain) {
+            expression += obj.value();
+
+            const opWord = obj.operator?.();
+            if (opWord) {
+                const opSymbol = operatorMap[opWord];
+                if (!opSymbol) throw new Error(`Unknown operator: ${opWord}`);
+                expression += ` ${opSymbol} `;
+            }
+        }
+
+        try {
+            const result = Function(`"use strict"; return (${expression})`)();
+            return result;
+        } catch (err) {
+            throw new Error(`Failed to evaluate expression: "${expression}"`);
+        }
+    }
 
 }
 
@@ -75,6 +143,16 @@ class CalcEntry {
     }
 
     // Buffer
+    appendToBuffer(char) {
+        if (typeof char !== 'string' || !/^[-.\d]$/.test(char)) {
+            throw new Error(`Invalid character: ${char}`);
+        }
+
+        if (char === '.' && this.#buffer.includes('.')) return;
+
+        this.#buffer.push(char);
+    }
+
     clearBuffer() {
         this.#buffer = [];
     }
