@@ -34,7 +34,75 @@ class CalcEntry {
         this.mode = undefined;
     }
 
-        
+    // Active flag
+    get active() {
+        return this.#active;
+    }
+
+    set active(bool) {
+        if (typeof bool != "boolean") {
+            throw new Error(`Error: CalcEntry.active type must be boolean`)
+        }
+        this.#active = bool;
+    }
+
+    // Value
+    get value() {
+        return this.#value;
+    }
+
+    set value(val) {
+        if (typeof val != "number") {
+            throw new Error(`Error: CalcEntry.value type must be number`)
+        }
+        this.#value = val;
+    }
+
+    // Display string
+    get display() {
+        return this.#display;
+    }
+
+    set display(str) {
+        if (typeof val != "string") {
+            throw new Error(`Error: CalcEntry.string type must be number`)
+        }        
+    }
+
+    // Buffer
+    clearBuffer() {
+        this.#buffer = [];
+    }
+
+    getBufferAsString() {
+        return this.#buffer.join('');
+    }
+
+    getBufferAsNumber() {
+        return Number(this.getBufferAsString());
+    }
+
+    negateBuffer() {
+        if (this.#buffer[0] == "-") {
+            this.#buffer.shift();
+        } else {
+            this.#buffer.unshift("-");
+        }
+    }
+
+    set buffer(newVal) {
+        if (typeof newVal === 'number' || typeof newVal === 'string') {
+            this.#buffer = newVal.toString().split('');
+        } else if (Array.isArray(newVal)) {
+            this.#buffer = [...newVal.map(String)];
+        } else {
+            throw new Error("Buffer must be a string, number, or array");
+        }
+    }
+
+    get buffer() {
+        return [...this.#buffer]; // Safe clone
+    }
 }
 
 let calcButtons = [
