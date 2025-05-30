@@ -344,12 +344,16 @@ function handleButtonEntry(buttonName, buttonType) {
     switch(buttonType) {
         case "operand":
             handleOperand(buttonName);
+            break;
         case "modifier":
             handleModifier(buttonName);
+            break;
         case "operator":
             handleOperator(buttonName);
+            break;
         case "control":
             handleControl(buttonName);
+            break;
     }
 }
 
@@ -374,6 +378,7 @@ function handleControl(buttonName) {
             currentEntry.buffer = [0];
             currentEntry.mode = "new"
             renderDisplay(currentEntry);
+            break;
         case "clearall":
             if (currentCalculation) {
                 currentCalculation.chain = [];
@@ -382,9 +387,11 @@ function handleControl(buttonName) {
             currentEntry.buffer = [0];
             currentEntry.mode = "new"
             renderDisplay(currentEntry, currentCalculation);
+            break;
         case "backspace":
             currentEntry.popFromBuffer();
             renderDisplay(currentEntry, currentCalculation);
+            break;
     }
 }
 
