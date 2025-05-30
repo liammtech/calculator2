@@ -16,7 +16,7 @@ class CalcButton {
         this.name = name;
         this.symbol = symbol;
         this.type = type;
-        this.enter = () => handleEntry(name, type); // Event listener for each button gets attached here
+        this.enter = () => handleButtonEntry(name, type); // Event listener for each button gets attached here
     }
 }
 
@@ -294,8 +294,35 @@ function renderDisplay(currentEntry, currentCalculation = null) {
     }
 }
 
-function handleEntry(buttonName, buttonType) {
+function handleButtonEntry(buttonName, buttonType) {
     console.log(`Button name: ${buttonName}\nButton type: ${buttonType}`);
+
+    switch(buttonType) {
+        case "operand":
+            handleOperand();
+        case "modifier":
+            handleModifier();
+        case "operator":
+            handleOperator();
+        case "control":
+            handleControl();
+    }
+}
+
+function handleOperand() {
+    return;
+}
+
+function handleModifier() {
+    return;
+}
+
+function handleOperator() {
+    return;
+}
+
+function handleControl() {
+    return;
 }
 
 function initCalculator() {
