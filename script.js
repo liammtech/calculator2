@@ -3,6 +3,7 @@ const calculationDisplay = document.querySelector("#calculation-display");
 const entryDisplay = document.querySelector("#entry-display");
 
 let currentEntry;
+let currentCalculation;
 
 const operandMap = {
     zero: 0,
@@ -187,6 +188,19 @@ class CalcEntry {
         }
     }
 
+    popFromBuffer() {
+        if (this.#buffer.length === 1) {
+            if (this.#buffer[0] === "0" || this.#buffer[0] === 0) {
+                return;
+            } else {
+                this.#buffer = [0];
+                return;
+            }
+        };
+        this.#buffer.pop();
+        this.#value = this.getBufferAsNumber();
+    }
+
     clearBuffer() {
         this.#buffer = [];
     }
@@ -221,6 +235,7 @@ class CalcEntry {
         }
 
         this.#buffer = chars.filter(char => allowed.has(char));
+        this.#value = this.getBufferAsNumber();
     }
 
     get buffer() {
@@ -353,8 +368,24 @@ function handleOperator() {
     return;
 }
 
-function handleControl() {
-    return;
+function handleControl(buttonName) {
+    switch(buttonName) {
+        case "clearentry":
+            currentEntry.buffer = [0];
+            currentEntry.mode = "new"
+            renderDisplay(currentEntry);
+        case "clearall":
+            if (currentCalculation) {
+                currentCalculation.chain = [];
+                currentCalculation.result = null;
+            }
+            currentEntry.buffer = [0];
+            currentEntry.mode = "new"
+            renderDisplay(currentEntry, currentCalculation);
+        case "backspace":
+            currentEntry.popFromBuffer();
+            renderDisplay(currentEntry, currentCalculation);
+    }
 }
 
 function initCalculator() {
