@@ -146,6 +146,7 @@ class CalcEntry {
             throw new Error(`Error: CalcEntry.value type must be number`)
         }
         this.#value = val;
+        this.setBufferFromValue()
     }
 
     // Display string
@@ -213,12 +214,22 @@ class CalcEntry {
         return Number(this.getBufferAsString());
     }
 
+    setBufferFromValue() {
+        this.#buffer = this.#value.toString().split('');
+    }
+
     negateBuffer() {
         if (this.#buffer[0] == "-") {
             this.#buffer.shift();
         } else {
             this.#buffer.unshift("-");
         }
+    }
+
+    reset() {
+        this.#mode = "new";
+        this.#buffer = [0];
+        this.#value = this.getBufferAsNumber();
     }
 
     set buffer(newVal) {
@@ -380,9 +391,16 @@ function handleModifier(buttonName) {
 
     switch(buttonName) {
         case("percentage"):
-            break;
+            if (!currentCalculation ||
+            currentCalculation.chain[0] === currentEntry) {
+                currentEntry.reset();
+                renderDisplay(currentEntry, currentCalculation);
+            } else {
+                currentEntry.value = currentEntry.value / 100;
+            }            
         case("reciprocal"):
-            break;
+            currentEntry.value = 1 / currentEntry.value;
+            renderDisplay(currentEntry, currentCalculation);
         case("square"):
             break;
         case("squareroot"):
