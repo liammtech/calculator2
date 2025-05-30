@@ -27,6 +27,14 @@ const operatorMap = {
     equals: '='
 };
 
+const opSymbolMap = {
+    '+': '+',
+    '-': '-',
+    '*': '×',
+    '/': '÷',
+    '=': '='
+};
+
 class CalcButton {
     constructor(name, symbol, type) {
         this.name = name;
@@ -118,7 +126,7 @@ class CalcEntry {
     constructor(value) {
         this.active = true;
         this.value = value;
-        this.display = "";
+        this.display = value.toString();
         this.mode = "new";
         this.updateEntryDisplay();
     }
@@ -338,7 +346,7 @@ function renderCalcButtons(buttons) {
     }
 }
 
-function renderDisplay(currentEntry, currentCalculation = null) {
+function renderDisplay(currentEntry) {
     if (currentEntry.value !== 0 && 
         !currentEntry.value) {
         throw new Error(`ERROR: RenderDisplay(): Must be given a valid currentEntry value`) // Not allowed: throw error for tracking
@@ -346,12 +354,19 @@ function renderDisplay(currentEntry, currentCalculation = null) {
         entryDisplay.textContent = currentEntry.getBufferAsString();
     }
 
-    if (!currentCalculation || 
-        currentCalculation.value !== 0 && 
-        !currentCalculation.value) {
-        // console.log("RenderDisplay(): no calculation value provided, skipping...") // Always no calculation value at startup: allowed but logged
+    if (!currentCalculation) {
+        calculationDisplay.textContent = "";
+        console.log("RenderDisplay(): no calculation value provided, skipping...") // Always no calculation value at startup: allowed but logged
     } else {
-        calculationDisplay.textContent = currentCalculation.getBufferAsString();
+        console.log("It's hitting bruv")
+        let displayText = ""
+        for (obj of currentCalculation.chain) {
+            displayText += obj.display;
+            if (obj.operator) {
+                displayText += opSymbolMap[obj.operator];
+            }
+        }
+        calculationDisplay.textContent = displayText;
     }
 }
 
@@ -416,26 +431,25 @@ function handleModifier(buttonName) {
         case("reciprocal"):
 
             currentEntry.value = 1 / currentEntry.value;
-            renderDisplay(currentEntry, currentCalculation);
 
             if (!currentEntry.display) {
                 currentEntry.display = `1/(${currentEntry.value})`;
             } else {
                 currentEntry.display = `1/(${currentEntry.display})`;
             }
-
+            renderDisplay(currentEntry, currentCalculation);
             break;
 
         case("square"):
 
             currentEntry.value = currentEntry.value * currentEntry.value;
-            renderDisplay(currentEntry, currentCalculation);
 
             if (!currentEntry.display) {
                 currentEntry.display = `sqr(${currentEntry.value})`;
             } else {
                 currentEntry.display = `sqr(${currentEntry.display})`;
             }
+            renderDisplay(currentEntry, currentCalculation);
 
             break;
 
@@ -479,6 +493,7 @@ function handleOperator(buttonName) {
     if (currentEntry.mode === "new") {
         previousEntry.operator = buttonName;
     }
+    renderDisplay(currentEntry, currentCalculation)
 }
 
 function handleControl(buttonName) {
