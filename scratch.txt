@@ -153,8 +153,8 @@ Entry Object Properties
     - getter
     - setter (validates if number)
     - constructor uses setter
-- Representation string (dictates how the operand entry is shown in the calculation display)
-    - private string property: #value
+- Display string (dictates how the operand entry is shown in the calculation display)
+    - private string property: #display
     - getter
     - setter (validates if string)
     - constructor uses setter
@@ -194,7 +194,7 @@ Calculation Object Properties
     - setter (triggered by method on this.chain)
     - constructor uses setter
 - Display string
-    - private number property: #result
+    - private string property: #display
     - getter
-    - setter (triggered by method on this.chain)
+    - setter (triggered by this.chain setter - reads from entry objects in calculation chain)
     - constructor uses setter

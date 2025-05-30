@@ -277,8 +277,18 @@ function renderCalcButtons(buttons) {
     }
 }
 
-function renderDisplay(currentCalculationStr, currentEntryStr) {
+function renderDisplay(currentEntry, currentCalculation = null) {
+    if (!currentEntry.value()) {
+        throw new Error(`ERROR: RenderDisplay(): Must be given a valid currentEntry value`) // Not allowed: throw error for tracking
+    } else {
+        entryDisplay.textContent = currentEntry.value();
+    }
 
+    if (!currentEntry.value()) {
+        console.log("RenderDisplay(): no calculation value provided, skipping...") // Always no calculation value at startup: allowed but logged
+    } else {
+        calculationDisplay.textContent = currentCalculation.value();
+    }
 }
 
 function handleEntry(buttonName, buttonType) {
