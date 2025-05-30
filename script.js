@@ -27,14 +27,6 @@ const operatorMap = {
     equals: '='
 };
 
-const opSymbolMap = {
-    '+': '+',
-    '-': '-',
-    '*': '×',
-    '/': '÷',
-    '=': '='
-};
-
 class CalcButton {
     constructor(name, symbol, type) {
         this.name = name;
@@ -92,14 +84,17 @@ class Calculation {
         let expression = '';
 
         for (const obj of this.chain) {
-            expression += obj.value();
-
-            const opWord = obj.operator?.();
-            if (opWord) {
-                const opSymbol = operatorMap[opWord];
-                if (!opSymbol) throw new Error(`Unknown operator: ${opWord}`);
-                expression += ` ${opSymbol} `;
+            expression += obj.value;
+            if (obj.operator) {
+                expression += ` ${obj.operator} `;
             }
+
+            // const opWord = obj.operator;
+            // if (opWord) {
+            //     const opSymbol = operatorMap[opWord];
+            //     if (!opSymbol) throw new Error(`Unknown operator: ${opWord}`);
+                
+            // }
         }
 
         try {
@@ -182,6 +177,7 @@ class CalcEntry {
         }
 
         if (char === '.' && this.#buffer.includes('.')) return;
+
         if (char != '.' && 
             this.#buffer.length === 1 &&
             (this.#buffer[0] === "0" || this.#buffer[0] === 0)) {
@@ -363,7 +359,7 @@ function renderDisplay(currentEntry) {
         for (obj of currentCalculation.chain) {
             displayText += obj.display;
             if (obj.operator) {
-                displayText += opSymbolMap[obj.operator];
+                displayText += obj.operator;
             }
         }
         calculationDisplay.textContent = displayText;
@@ -371,6 +367,10 @@ function renderDisplay(currentEntry) {
 }
 
 function handleButtonEntry(buttonName, buttonType) {
+    if (currentCalculation && !currentCalculation.active) {
+        currentCalculation = null;
+        currentEntry = new CalcEntry(currentEntry.value);
+    }
     switch(buttonType) {
         case "operand":
             handleOperand(buttonName);
@@ -426,6 +426,7 @@ function handleModifier(buttonName) {
                 currentEntry.value = currentEntry.value / 100;
             }
             currentEntry.display = currentEntry.value.toString();
+            renderDisplay(currentEntry, currentCalculation);
             break;
 
         case("reciprocal"):
@@ -456,13 +457,14 @@ function handleModifier(buttonName) {
         case("squareroot"):
             
             currentEntry.value = Math.sqrt(currentEntry.value);
-            renderDisplay(currentEntry, currentCalculation);
             
             if (!currentEntry.display) {
                 currentEntry.display = `sqrt(${currentEntry.value})`;
             } else {
                 currentEntry.display = `sqrt(${currentEntry.display})`;
             }
+
+            renderDisplay(currentEntry, currentCalculation);
 
             break;
 
@@ -473,6 +475,18 @@ function handleModifier(buttonName) {
 }
 
 function handleOperator(buttonName) {
+
+    if (buttonName === "equals") {
+        currentCalculation.appendToChain(currentEntry);
+        let result = currentCalculation.calculateResult();
+        console.log(`Result: ${result}`)
+        currentEntry.value = result;
+        currentEntry.mode = "closed";
+        currentCalculation.active = false;
+        renderDisplay(currentEntry);
+        return;
+    }
+
     if (currentEntry.mode === "entry" || currentEntry.mode === "modifier") {
         currentEntry.operator = buttonName;
     }
@@ -490,9 +504,12 @@ function handleOperator(buttonName) {
     currentEntry.active = false;
     currentEntry = new CalcEntry(currentEntry.value);
 
-    if (currentEntry.mode === "new") {
+    if (currentEntry.mode === "new" && previousEntry.operator) {
         previousEntry.operator = buttonName;
     }
+
+
+
     renderDisplay(currentEntry, currentCalculation)
 }
 
