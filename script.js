@@ -42,9 +42,9 @@ class Calculation {
     #result;
     #display;
 
-    constructor() {
+    constructor(obj) {
         this.active = true;
-        this.chain = [];
+        this.chain = [obj];
         this.result = undefined;
         this.display = "";
     }
@@ -67,13 +67,13 @@ class Calculation {
     }
 
     appendToChain(entryObj) {
-        if (typeof entryObj !== CalcEntry) {
+        if (!(entryObj instanceof CalcEntry)) {
             throw new Error(`Invalid calculation chain item: type must be CalcEntry object`);
         }
 
         this.#chain.push(entryObj);
 
-        if (entryObj.operator() == "equals") {
+        if (entryObj.operator && entryObj.operator === "equals") {
             this.calculateResult();
         }
     }
@@ -358,14 +358,38 @@ function handleButtonEntry(buttonName, buttonType) {
 }
 
 function handleOperand(buttonName) {
+    if (currentEntry.mode === "modifier" || currentEntry.mode === "operator") {
+        return;
+    }
     const opSymbol = operandMap[buttonName];
     currentEntry.appendToBuffer(opSymbol);
     renderDisplay(currentEntry);
     return;
 }
 
-function handleModifier() {
-    return;
+function handleModifier(buttonName) {
+    currentEntry.mode = "modifier";
+
+    if (!currentCalculation) {
+        currentCalculation = new Calculation(currentEntry);
+    }
+
+    if (!currentCalculation.chain.includes(currentEntry)) {
+        currentCalculation.appendToChain(currentEntry);
+    }
+
+    switch(buttonName) {
+        case("percentage"):
+            break;
+        case("reciprocal"):
+            break;
+        case("square"):
+            break;
+        case("squareroot"):
+            break;
+        case("toggleparity"):
+            break;
+    }
 }
 
 function handleOperator() {
