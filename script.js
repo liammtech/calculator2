@@ -2,6 +2,21 @@ const buttonPanel = document.querySelector("#button-panel");
 const calculationDisplay = document.querySelector("#calculation-display");
 const entryDisplay = document.querySelector("#entry-display");
 
+let currentEntry;
+
+const operandMap = {
+    one: 1,
+    two: 2,
+    three: 3,
+    four: 4,
+    five: 5,
+    six: 6,
+    seven: 7,
+    eight: 8,
+    nine: 9,
+    decimalpoint: '.'
+}
+
 const operatorMap = {
     add: '+',
     subtract: '-',
@@ -9,7 +24,6 @@ const operatorMap = {
     divide: '/',
     equals: '='
 };
-
 
 class CalcButton {
     constructor(name, symbol, type) {
@@ -226,14 +240,14 @@ class CalcEntry {
 let calcButtons = [
     // Row 1
     new CalcButton("percentage", "%", "modifier"),
-    new CalcButton("clear-entry", "CE", "control"),
-    new CalcButton("clear-all", "C", "control"),
+    new CalcButton("clearentry", "CE", "control"),
+    new CalcButton("clearall", "C", "control"),
     new CalcButton("backspace", "⌫", "control"),
 
     // Row 2
     new CalcButton("reciprocal", "1/𝑥", "modifier"),
     new CalcButton("square", "𝑥²", "modifier"),
-    new CalcButton("square-root", "√𝑥", "modifier"),
+    new CalcButton("squareroot", "√𝑥", "modifier"),
     new CalcButton("divide", "÷", "operator"),
 
     // Row 3
@@ -255,9 +269,9 @@ let calcButtons = [
     new CalcButton("add", "+", "operator"),
 
     // Row 6
-    new CalcButton("toggle-parity", "+/-", "modifier"),
+    new CalcButton("toggleparity", "+/-", "modifier"),
     new CalcButton("zero", "0", "operand"),
-    new CalcButton("decimal-point", ".", "operand"),
+    new CalcButton("decimalpoint", ".", "operand"),
     new CalcButton("equals", "=", "operator"),
 ]
 
@@ -299,17 +313,19 @@ function handleButtonEntry(buttonName, buttonType) {
 
     switch(buttonType) {
         case "operand":
-            handleOperand();
+            handleOperand(buttonName);
         case "modifier":
-            handleModifier();
+            handleModifier(buttonName);
         case "operator":
-            handleOperator();
+            handleOperator(buttonName);
         case "control":
-            handleControl();
+            handleControl(buttonName);
     }
 }
 
-function handleOperand() {
+function handleOperand(buttonName) {
+    const opSymbol = operandMap[buttonName];
+    currentEntry.appendToBuffer(opSymbol);
     return;
 }
 
@@ -327,7 +343,7 @@ function handleControl() {
 
 function initCalculator() {
     buttonPanel.innerHTML = "";
-    let currentEntry = new CalcEntry(0);
+    currentEntry = new CalcEntry(0);
     renderCalcButtons(calcButtons);
     renderDisplay(currentEntry);
 };
