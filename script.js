@@ -5,6 +5,7 @@ const entryDisplay = document.querySelector("#entry-display");
 let currentEntry;
 
 const operandMap = {
+    zero: 0,
     one: 1,
     two: 2,
     three: 3,
@@ -163,13 +164,18 @@ class CalcEntry {
 
     // Buffer
     appendToBuffer(char) {
-        if (typeof char !== 'string' || !/^[-.\d]$/.test(char)) {
-            throw new Error(`Invalid character: ${char}`);
+        const isDigit = typeof char === 'number' && Number.isInteger(char) && char >= 0 && char <= 9;
+        const isSymbol = typeof char === 'string' && /^[-.]$/.test(char);
+
+        if (!isDigit && !isSymbol) {
+            throw new Error('Invalid character');
         }
 
         if (char === '.' && this.#buffer.includes('.')) return;
 
         this.#buffer.push(char);
+
+        this.#value = this.getBufferAsNumber();
     }
 
     clearBuffer() {
@@ -326,6 +332,7 @@ function handleButtonEntry(buttonName, buttonType) {
 function handleOperand(buttonName) {
     const opSymbol = operandMap[buttonName];
     currentEntry.appendToBuffer(opSymbol);
+    renderDisplay(currentEntry);
     return;
 }
 
