@@ -71,7 +71,7 @@ class Calculation {
             throw new Error(`Invalid calculation chain item: type must be CalcEntry object`);
         }
 
-        this.#chain.push(entryObj);
+        this.chain.push(entryObj);
 
         if (entryObj.operator && entryObj.operator === "equals") {
             this.calculateResult();
@@ -112,14 +112,13 @@ class CalcEntry {
     #mode;
     #operator;
 
-    static allowedModes = ["new", "entry", "modifier", "operator"]; // will always be in one of these four states
+    static allowedModes = ["new", "entry", "modifier", "operator", "closed"]; // will always be in one of these four states
     static allowedOperators = ["add", "subtract", "multiply", "divide", "equals", undefined]; // Needs to allow it not being set yet
 
     constructor(value) {
         this.active = true;
         this.value = value;
         this.display = "";
-        this.buffer = [0]
         this.mode = "new";
         this.updateEntryDisplay();
     }
@@ -157,7 +156,8 @@ class CalcEntry {
     set display(str) {
         if (typeof str != "string") {
             throw new Error(`Error: CalcEntry.string type must be number`)
-        }        
+        }
+        this.#display = str;
     }
 
     updateEntryDisplay() {
@@ -266,7 +266,7 @@ class CalcEntry {
 
     set mode(val) {
         if (!CalcEntry.allowedModes.includes(val)) {
-            throw new Error(`Invalid mode: ${value}. Allowed values are: ${MyObject.allowedModes.join(', ')}`)
+            throw new Error(`Invalid mode: ${value}. Allowed values are: ${CalcEntry.allowedModes.join(', ')}`)
         }
         this.#mode = val;
     }
@@ -278,9 +278,9 @@ class CalcEntry {
 
     set operator(val) {
         if (!CalcEntry.allowedOperators.includes(val)) {
-            throw new Error(`Invalid operator: ${value}. Allowed values are: ${MyObject.allowedOperators.join(', ')}`)
+            throw new Error(`Invalid operator: ${val}. Allowed values are: ${CalcEntry.allowedOperators.join(', ')}`)
         }
-        this.#operator = this.#value;
+        this.#operator = operatorMap[val];
     }
 }
 
@@ -349,15 +349,13 @@ function renderDisplay(currentEntry, currentCalculation = null) {
     if (!currentCalculation || 
         currentCalculation.value !== 0 && 
         !currentCalculation.value) {
-        console.log("RenderDisplay(): no calculation value provided, skipping...") // Always no calculation value at startup: allowed but logged
+        // console.log("RenderDisplay(): no calculation value provided, skipping...") // Always no calculation value at startup: allowed but logged
     } else {
         calculationDisplay.textContent = currentCalculation.getBufferAsString();
     }
 }
 
 function handleButtonEntry(buttonName, buttonType) {
-    console.log(`Button name: ${buttonName}\nButton type: ${buttonType}`);
-
     switch(buttonType) {
         case "operand":
             handleOperand(buttonName);
@@ -375,13 +373,17 @@ function handleButtonEntry(buttonName, buttonType) {
 }
 
 function handleOperand(buttonName) {
-    if (currentEntry.mode === "modifier" || currentEntry.mode === "operator") {
-        handleControl("clearentry");
+    if (currentEntry.mode === "new" ||
+        currentEntry.mode === "modifier" || 
+        currentEntry.mode === "operator") {
+        currentEntry.reset();
+        currentEntry.mode = "entry"
     }
 
     entryDisplay.classList.remove('result-display')
     const opSymbol = operandMap[buttonName];
     currentEntry.appendToBuffer(opSymbol);
+    currentEntry.display = currentEntry.value.toString();
 
     renderDisplay(currentEntry);
     return;
@@ -407,25 +409,47 @@ function handleModifier(buttonName) {
                 currentEntry.reset();
             } else {
                 currentEntry.value = currentEntry.value / 100;
-            } 
+            }
+            currentEntry.display = currentEntry.value.toString();
             break;
 
         case("reciprocal"):
 
             currentEntry.value = 1 / currentEntry.value;
             renderDisplay(currentEntry, currentCalculation);
+
+            if (!currentEntry.display) {
+                currentEntry.display = `1/(${currentEntry.value})`;
+            } else {
+                currentEntry.display = `1/(${currentEntry.display})`;
+            }
+
             break;
 
         case("square"):
 
             currentEntry.value = currentEntry.value * currentEntry.value;
             renderDisplay(currentEntry, currentCalculation);
+
+            if (!currentEntry.display) {
+                currentEntry.display = `sqr(${currentEntry.value})`;
+            } else {
+                currentEntry.display = `sqr(${currentEntry.display})`;
+            }
+
             break;
 
         case("squareroot"):
             
             currentEntry.value = Math.sqrt(currentEntry.value);
             renderDisplay(currentEntry, currentCalculation);
+            
+            if (!currentEntry.display) {
+                currentEntry.display = `sqrt(${currentEntry.value})`;
+            } else {
+                currentEntry.display = `sqrt(${currentEntry.display})`;
+            }
+
             break;
 
         case("toggleparity"):
@@ -434,8 +458,27 @@ function handleModifier(buttonName) {
     }
 }
 
-function handleOperator() {
-    return;
+function handleOperator(buttonName) {
+    if (currentEntry.mode === "entry" || currentEntry.mode === "modifier") {
+        currentEntry.operator = buttonName;
+    }
+
+    if (!currentCalculation) {
+        previousEntry = currentEntry;
+        currentCalculation = new Calculation(currentEntry);
+    }
+
+    if (!currentCalculation.chain.includes(currentEntry)) {
+        previousEntry = currentEntry;
+        currentCalculation.appendToChain(currentEntry);
+    }
+
+    currentEntry.active = false;
+    currentEntry = new CalcEntry(currentEntry.value);
+
+    if (currentEntry.mode === "new") {
+        previousEntry.operator = buttonName;
+    }
 }
 
 function handleControl(buttonName) {
