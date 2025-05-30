@@ -118,7 +118,7 @@ class CalcEntry {
         this.active = true;
         this.value = value;
         this.display = "";
-        this.buffer = []
+        this.buffer = [0]
         this.mode = "new";
         this.updateEntryDisplay();
     }
@@ -172,10 +172,19 @@ class CalcEntry {
         }
 
         if (char === '.' && this.#buffer.includes('.')) return;
+        if (char != '.' && 
+            this.#buffer.length === 1 &&
+            (this.#buffer[0] === "0" || this.#buffer[0] === 0)) {
+                this.#buffer = []
+        };
 
         this.#buffer.push(char);
 
         this.#value = this.getBufferAsNumber();
+
+        if (currentEntry.mode === "new") {
+            currentEntry.mode = "entry";
+        }
     }
 
     clearBuffer() {
@@ -227,7 +236,7 @@ class CalcEntry {
         if (!CalcEntry.allowedModes.includes(val)) {
             throw new Error(`Invalid mode: ${value}. Allowed values are: ${MyObject.allowedModes.join(', ')}`)
         }
-        this.#mode = this.#value;
+        this.#mode = val;
     }
 
     // Operator
@@ -302,7 +311,7 @@ function renderDisplay(currentEntry, currentCalculation = null) {
         !currentEntry.value) {
         throw new Error(`ERROR: RenderDisplay(): Must be given a valid currentEntry value`) // Not allowed: throw error for tracking
     } else {
-        entryDisplay.textContent = currentEntry.value;
+        entryDisplay.textContent = currentEntry.getBufferAsString();
     }
 
     if (!currentCalculation || 
@@ -310,7 +319,7 @@ function renderDisplay(currentEntry, currentCalculation = null) {
         !currentCalculation.value) {
         console.log("RenderDisplay(): no calculation value provided, skipping...") // Always no calculation value at startup: allowed but logged
     } else {
-        calculationDisplay.textContent = currentCalculation.value;
+        calculationDisplay.textContent = currentCalculation.getBufferAsString();
     }
 }
 
