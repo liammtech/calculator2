@@ -198,3 +198,5 @@ Calculation Object Properties
     - getter
     - setter (triggered by this.chain setter - reads from entry objects in calculation chain)
     - constructor uses setter
+
+FUTURE: handle exponential notation for display

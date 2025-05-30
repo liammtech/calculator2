@@ -218,18 +218,24 @@ class CalcEntry {
         this.#buffer = this.#value.toString().split('');
     }
 
-    negateBuffer() {
+    negate() {
+        if (this.#value === 0) {
+            return;
+        }
+        this.#value = this.#value * -1;
         if (this.#buffer[0] == "-") {
             this.#buffer.shift();
         } else {
             this.#buffer.unshift("-");
         }
+        renderDisplay(currentEntry);
     }
 
     reset() {
         this.#mode = "new";
         this.#buffer = [0];
         this.#value = this.getBufferAsNumber();
+        renderDisplay(currentEntry);
     }
 
     set buffer(newVal) {
@@ -370,10 +376,13 @@ function handleButtonEntry(buttonName, buttonType) {
 
 function handleOperand(buttonName) {
     if (currentEntry.mode === "modifier" || currentEntry.mode === "operator") {
-        return;
+        handleControl("clearentry");
     }
+
+    entryDisplay.classList.remove('result-display')
     const opSymbol = operandMap[buttonName];
     currentEntry.appendToBuffer(opSymbol);
+
     renderDisplay(currentEntry);
     return;
 }
@@ -389,23 +398,38 @@ function handleModifier(buttonName) {
         currentCalculation.appendToChain(currentEntry);
     }
 
+    entryDisplay.classList.add('result-display')
+
     switch(buttonName) {
         case("percentage"):
-            if (!currentCalculation ||
-            currentCalculation.chain[0] === currentEntry) {
+
+            if (currentCalculation.chain[0] === currentEntry) {
                 currentEntry.reset();
-                renderDisplay(currentEntry, currentCalculation);
             } else {
                 currentEntry.value = currentEntry.value / 100;
-            }            
+            } 
+            break;
+
         case("reciprocal"):
+
             currentEntry.value = 1 / currentEntry.value;
             renderDisplay(currentEntry, currentCalculation);
+            break;
+
         case("square"):
+
+            currentEntry.value = currentEntry.value * currentEntry.value;
+            renderDisplay(currentEntry, currentCalculation);
             break;
+
         case("squareroot"):
+            
+            currentEntry.value = Math.sqrt(currentEntry.value);
+            renderDisplay(currentEntry, currentCalculation);
             break;
+
         case("toggleparity"):
+            currentEntry.negate();
             break;
     }
 }
@@ -417,18 +441,10 @@ function handleOperator() {
 function handleControl(buttonName) {
     switch(buttonName) {
         case "clearentry":
-            currentEntry.buffer = [0];
-            currentEntry.mode = "new"
-            renderDisplay(currentEntry);
+            currentEntry.reset();
             break;
         case "clearall":
-            if (currentCalculation) {
-                currentCalculation.chain = [];
-                currentCalculation.result = null;
-            }
-            currentEntry.buffer = [0];
-            currentEntry.mode = "new"
-            renderDisplay(currentEntry, currentCalculation);
+            initCalculator();
             break;
         case "backspace":
             currentEntry.popFromBuffer();
@@ -438,6 +454,9 @@ function handleControl(buttonName) {
 }
 
 function initCalculator() {
+    if (currentCalculation) {
+        currentCalculation = null;
+    }
     buttonPanel.innerHTML = "";
     currentEntry = new CalcEntry(0);
     renderCalcButtons(calcButtons);
